@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MemeOverflow - Code to Meme Generator</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      color: #333;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 1.1em;
+    }
+
+    .input-section {
+      background: #f8f9fa;
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 30px;
+      border: 2px solid #e9ecef;
+    }
+
+    .input-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .tab-button {
+      padding: 12px 24px;
+      border: none;
+      background: #e9ecef;
+      color: #495057;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .tab-button.active,
+    .tab-button:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .input-form {
+      margin-top: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+      font-family: 'Courier New', monospace;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .code-input {
+      min-height: 120px;
+      background: #2d3748;
+      color: #e2e8f0;
+      font-family: 'Fira Code', 'Courier New', monospace;
+    }
+
+    .generate-btn {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 auto;
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .generate-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error-message {
+      background: #fee;
+      color: #c33;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      border-left: 4px solid #c33;
+    }
+
+    .meme-result {
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .meme-container {
+      position: relative;
+      display: inline-block;
+      margin: 20px 0;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .meme-container img {
+      max-width: 100%;
+      max-height: 600px;
+      display: block;
+    }
+
+    .meme-text {
+      position: absolute;
+      width: 100%;
+      color: white;
+      font-weight: 900;
+      font-size: clamp(1.2em, 4vw, 2.5em);
+      text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0 15px;
+      text-align: center;
+      font-family: 'Impact', Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .top-text {
+      top: 20px;
+    }
+
+    .bottom-text {
+      bottom: 20px;
+    }
+
+    .result-info {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      border-left: 4px solid #667eea;
+    }
+
+    .result-info h3 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .result-info p {
+      color: #666;
+      margin: 5px 0;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .action-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .download-btn {
+      background: #28a745;
+      color: white;
+    }
+
+    .share-btn {
+      background: #17a2b8;
+      color: white;
+    }
+
+    .regenerate-btn {
+      background: #ffc107;
+      color: #333;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+    }
+
+    .examples {
+      margin-top: 30px;
+      padding: 20px;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 15px;
+    }
+
+    .examples h3 {
+      color: #333;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .example-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .example-chip {
+      background: #667eea;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+    }
+
+    .example-chip:hover {
+      background: #5a6fd8;
+      transform: scale(1.05);
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .loading.show {
+      display: block;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+        margin: 10px;
+      }
+
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .input-tabs {
+        flex-direction: column;
+      }
+
+      .tab-button {
+        width: 100%;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-laugh-squint"></i> MemeOverflow</h1>
+      <p>Transform your code commits and snippets into hilarious memes!</p>
+    </div>
+
+    <div class="input-section">
+      <div class="input-tabs">
+        <button class="tab-button" onclick="switchTab('commit')"
+          th:classappend="${type == 'commit' or type == null} ? 'active' : ''">
+          <i class="fab fa-git-alt"></i> Commit Message
+        </button>
+        <button class="tab-button" onclick="switchTab('code')" th:classappend="${type == 'code'} ? 'active' : ''">
+          <i class="fas fa-code"></i> Code Snippet
+        </button>
+        <button class="tab-button" onclick="switchTab('custom')" th:classappend="${type == 'custom'} ? 'active' : ''">
+          <i class="fas fa-edit"></i> Custom Text
+        </button>
+      </div>
+
+      <form action="/generate" method="get" autocomplete="off" class="input-form" id="memeForm">
+        <input type="hidden" name="type" id="inputType" th:value="${type ?: 'commit'}" />
+
+        <div id="commit-tab" class="tab-content"
+          th:style="${type == 'commit' or type == null} ? 'display: block;' : 'display: none;'">
+          <div class="form-group">
+            <label for="commit-input">
+              <i class="fas fa-terminal"></i> Enter your commit message:
+            </label>
+            <textarea name="input" id="commit-input" class="form-input" rows="4"
+              placeholder="fix: resolved critical bug in payment processing system"
+              th:text="${type == 'commit' or type == null} ? ${input} : ''" required></textarea>
+          </div>
+        </div>
+
+        <div id="code-tab" class="tab-content" th:style="${type == 'code'} ? 'display: block;' : 'display: none;'">
+          <div class="form-group">
+            <label for="code-input">
+              <i class="fas fa-file-code"></i> Paste your code snippet:
+            </label>
+            <textarea name="input" id="code-input" class="form-input code-input" rows="8" placeholder="if (bug) {
+    fix(bug);
+} else {
+    // TODO: figure out why this works
+    console.log('magic');
+}" th:text="${type == 'code'} ? ${input} : ''" th:disabled="${type != 'code'}"></textarea>
+          </div>
+        </div>
+
+        <div id="custom-tab" class="tab-content" th:style="${type == 'custom'} ? 'display: block;' : 'display: none;'">
+          <div class="form-group">
+            <label for="custom-input">
+              <i class="fas fa-keyboard"></i> Enter custom text:
+            </label>
+            <textarea name="input" id="custom-input" class="form-input" rows="4"
+              placeholder="Enter any text to turn into a programming meme..."
+              th:text="${type == 'custom'} ? ${input} : ''" th:disabled="${type != 'custom'}"></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="generate-btn" id="generateBtn">
+          <i class="fas fa-magic"></i>
+          Generate Meme
+        </button>
+      </form>
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Generating your meme... <i class="fas fa-smile"></i></p>
+      </div>
+    </div>
+
+    <div th:if="${error}" class="error-message">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span th:text="${error}"></span>
+    </div>
+
+    <div th:if="${url}" class="meme-result">
+      <div class="result-info">
+        <h3><i class="fas fa-info-circle"></i> Generated Meme</h3>
+        <p><strong>Original Input:</strong> <span th:text="${input}"></span></p>
+        <p><strong>Meme Text:</strong> <span th:text="${prompt}"></span></p>
+        <p><strong>Input Type:</strong>
+          <span
+            th:text="${type == 'commit'} ? 'Commit Message' : ${type == 'code'} ? 'Code Snippet' : 'Custom Text'"></span>
+        </p>
+      </div>
+
+      <div class="meme-container">
+        <img th:src="${url}" alt="Generated Meme" loading="lazy" />
+        <div class="meme-text top-text" th:text="${topText}"></div>
+        <div class="meme-text bottom-text" th:text="${bottomText}"></div>
+      </div>
+
+      <div class="action-buttons">
+        <a th:href="${url}" class="action-btn download-btn" download="meme.jpg">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <button class="action-btn share-btn" onclick="shareImage()">
+          <i class="fas fa-share"></i> Share
+        </button>
+        <button class="action-btn regenerate-btn" onclick="regenerate()">
+          <i class="fas fa-redo"></i> Generate Another
+        </button>
+      </div>
+    </div>
+
+    <div class="examples">
+      <h3><i class="fas fa-lightbulb"></i> Try these examples:</h3>
+      <div class="example-chips">
+        <button class="example-chip" onclick="fillExample('fix: resolved merge conflict')">fix: resolved merge
+          conflict</button>
+        <button class="example-chip" onclick="fillExample('refactor: cleaned up legacy code')">refactor: cleaned up
+          legacy code</button>
+        <button class="example-chip" onclick="fillExample('hotfix: urgent production bug')">hotfix: urgent production
+          bug</button>
+        <button class="example-chip" onclick="fillExample('feat: added new feature')">feat: added new feature</button>
+        <button class="example-chip" onclick="fillExample('test: increased coverage to 100%')">test: increased coverage
+          to 100%</button>
+        <button class="example-chip" onclick="fillExample('docs: updated README')">docs: updated README</button>
+        <button class="example-chip" onclick="fillExample('style: fixed formatting')">style: fixed formatting</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tabName) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.style.display = 'none';
+      });
+
+      // Remove active class from all buttons
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      // Show selected tab and mark button as active
+      document.getElementById(tabName + '-tab').style.display = 'block';
+      event.target.classList.add('active');
+
+      // Update hidden input type
+      document.getElementById('inputType').value = tabName;
+
+      // Enable/disable the appropriate input
+      document.querySelectorAll('textarea[name="input"]').forEach(textarea => {
+        textarea.disabled = true;
+        textarea.removeAttribute('required');
+      });
+
+      const activeInput = document.querySelector('#' + tabName + '-input');
+      activeInput.disabled = false;
+      activeInput.setAttribute('required', 'required');
+    }
+
+    function fillExample(text) {
+      const activeInput = document.querySelector('textarea[name="input"]:not([disabled])');
+      if (activeInput) {
+        activeInput.value = text;
+        activeInput.focus();
+      }
+    }
+
+    function shareImage() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'Check out this programming meme!',
+          text: 'Made with MemeOverflow',
+          url: window.location.href
+        }).catch(console.error);
+      } else {
+        // Fallback to copying URL
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          alert('Link copied to clipboard!');
+        });
+      }
+    }
+
+    function regenerate() {
+      const activeInput = document.querySelector('textarea[name="input"]:not([disabled])');
+      if (activeInput && activeInput.value) {
+        document.getElementById('memeForm').submit();
+      }
+    }
+
+    // Show loading spinner on form submit
+    document.getElementById('memeForm').addEventListener('submit', function () {
+      document.getElementById('loading').classList.add('show');
+      document.getElementById('generateBtn').disabled = true;
+    });
+
+    // Auto-resize textareas
+    document.querySelectorAll('textarea').forEach(textarea => {
+      textarea.addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+      });
+    });
+
+    // Initialize the correct tab on page load
+    document.addEventListener('DOMContentLoaded', function () {
+      const currentType = document.getElementById('inputType').value || 'commit';
+      switchTab(currentType);
+    });
+  </script>
+</body>
+
+</html>
