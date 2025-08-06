@@ -35,6 +35,11 @@ public class MemeController {
     return "gallery";
   }
 
+  @GetMapping("/horror-stories")
+  public String horrorStories() {
+    return "horror-stories";
+  }
+
   @GetMapping("/generate")
   public String generate(@RequestParam(required = false) String input,
       @RequestParam(defaultValue = "commit") String type,
