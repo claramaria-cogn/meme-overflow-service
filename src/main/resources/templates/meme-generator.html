@@ -435,7 +435,7 @@
         <p><strong>Meme Text:</strong> <span th:text="${prompt}"></span></p>
         <p><strong>Input Type:</strong>
           <span
-            th:text="${type == 'commit'} ? 'Commit Message' : ${type == 'code'} ? 'Code Snippet' : 'Custom Text'"></span>
+            th:text="${type == 'commit' ? 'Commit Message' : (type == 'code' ? 'Code Snippet' : 'Custom Text')}"></span>
         </p>
       </div>
 
