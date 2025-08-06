@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meme Dictionary - Programming Humor Explained</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 40px 20px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .header h1 {
+      font-size: 3em;
+      color: #667eea;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .header p {
+      font-size: 1.2em;
+      color: #666;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .search-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-container {
+      position: relative;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 15px 50px 15px 20px;
+      border: 2px solid #ddd;
+      border-radius: 25px;
+      font-size: 1.1em;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #667eea;
+      font-size: 1.2em;
+    }
+
+    .filters {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: #f8f9fa;
+      border: 2px solid #ddd;
+      border-radius: 20px;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9em;
+    }
+
+    .filter-btn.active,
+    .filter-btn:hover {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .meme-grid {
+      display: grid;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .meme-entry {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      border-left: 5px solid #667eea;
+    }
+
+    .meme-entry:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .meme-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .meme-title {
+      font-size: 1.5em;
+      color: #333;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .meme-emoji {
+      font-size: 1.2em;
+    }
+
+    .meme-category {
+      background: #667eea;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 0.8em;
+      font-weight: 600;
+    }
+
+    .meme-origin {
+      color: #888;
+      font-size: 0.9em;
+      margin-bottom: 15px;
+      font-style: italic;
+    }
+
+    .meme-description {
+      color: #555;
+      margin-bottom: 20px;
+      font-size: 1.05em;
+    }
+
+    .meme-example {
+      background: #f8f9fa;
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      color: #333;
+    }
+
+    .usage-context {
+      background: #e8f4fd;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
+    }
+
+    .usage-title {
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 8px;
+    }
+
+    .related-memes {
+      margin-top: 15px;
+    }
+
+    .related-tag {
+      display: inline-block;
+      background: #f0f0f0;
+      color: #555;
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 0.8em;
+      margin: 2px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .related-tag:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .meme-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .memeify-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      font-size: 0.9em;
+    }
+
+    .memeify-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .stats-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 30px;
+      margin: 30px 0;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .stat-item {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 2em;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .navigation {
+      text-align: center;
+      margin-top: 40px;
+      padding: 30px;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.95);
+      color: #667eea;
+      border: 2px solid #667eea;
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-btn:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+      font-size: 1.2em;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2em;
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .meme-entry {
+        padding: 20px;
+      }
+      
+      .meme-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .filters {
+        justify-content: flex-start;
+      }
+
+      .nav-btn {
+        margin: 5px;
+        padding: 12px 20px;
+      }
+    }
+
+    /* Scroll to top button */
+    .scroll-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .scroll-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .scroll-top:hover {
+      background: #5a67d8;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>
+        <i class="fas fa-book"></i>
+        📚 Meme Dictionary
+        <i class="fas fa-code"></i>
+      </h1>
+      <p>The definitive guide to programming humor, memes, and developer culture. Learn the origins, meanings, and proper usage of every meme that makes us laugh (and cry).</p>
+    </div>
+
+    <div class="search-section">
+      <div class="search-container">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search memes, origins, or keywords...">
+        <i class="fas fa-search search-icon"></i>
+      </div>
+      
+      <div class="filters">
+        <button class="filter-btn active" data-category="all">All Memes</button>
+        <button class="filter-btn" data-category="classic">Classics</button>
+        <button class="filter-btn" data-category="modern">Modern</button>
+        <button class="filter-btn" data-category="error">Error Messages</button>
+        <button class="filter-btn" data-category="workflow">Workflow</button>
+        <button class="filter-btn" data-category="social">Social</button>
+      </div>
+    </div>
+
+    <div class="stats-section">
+      <h2 style="color: #667eea; margin-bottom: 10px;">📊 Dictionary Stats</h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">42</div>
+          <div>Classic Memes</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">∞</div>
+          <div>Variations</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">1998</div>
+          <div>First Recorded</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div>Accuracy*</div>
+        </div>
+      </div>
+      <p style="margin-top: 15px; font-size: 0.8em; opacity: 0.8;">*Accuracy not guaranteed, but laughs are!</p>
+    </div>
+
+    <div class="meme-grid" id="memeGrid">
+      <!-- "Works on My Machine" -->
+      <div class="meme-entry" data-category="classic" data-keywords="works machine environment compatibility">
+        <div class="meme-header">
+          <h3 class="meme-title">
+            <span class="meme-emoji">💻</span>
+            "Works on My Machine"
+          </h3>
+          <span class="meme-category">Classic</span>
+        </div>
+        <div class="meme-origin">Origin: Early 2000s • First popularized in enterprise development</div>
+        <div class="meme-description">
+          The ultimate excuse when code fails in production but runs perfectly on the developer's local environment. This phrase has become the bane of DevOps engineers everywhere and the most feared words in any deployment meeting.
+        </div>
+        <div class="meme-example">
+          Developer: "The payment system is down?"<br>
+          Manager: "Yes, customers can't check out!"<br>
+          Developer: "That's weird... it works on my machine 🤷‍♂️"
+        </div>
+        <div class="usage-context">
+          <div class="usage-title">When to Use:</div>
+          When your code mysteriously fails in any environment other than your own, despite being absolutely certain it should work everywhere.
+        </div>
+        <div class="related-memes">
+          <strong>Related:</strong>
+          <span class="related-tag">Environment Hell</span>
+          <span class="related-tag">Docker</span>
+          <span class="related-tag">Configuration Drift</span>
+        </div>
+        <div class="meme-actions">
+          <a href="/generator?input=Code works locally but fails in production&type=CODE" class="memeify-btn">
+            <i class="fas fa-magic"></i>
+            Memeify This!
+          </a>
+        </div>
+      </div>
+
+      <!-- Rubber Duck Debugging -->
+      <div class="meme-entry" data-category="workflow" data-keywords="rubber duck debugging explain problem">
+        <div class="meme-header">
+          <h3 class="meme-title">
+            <span class="meme-emoji">🦆</span>
+            Rubber Duck Debugging
+          </h3>
+          <span class="meme-category">Workflow</span>
+        </div>
+        <div class="meme-origin">Origin: 1999 • "The Pragmatic Programmer" book by Andrew Hunt and David Thomas</div>
+        <div class="meme-description">
+          A debugging method where you explain your code line-by-line to a rubber duck (or any inanimate object). Surprisingly effective because verbalizing the problem often reveals the solution. The duck doesn't judge, doesn't interrupt, and is always available.
+        </div>
+        <div class="meme-example">
+          "OK duck, so this function should return the user's age, but it's returning NaN... OH WAIT, I'm passing a string to parseInt without a radix!"
+        </div>
+        <div class="usage-context">
+          <div class="usage-title">When to Use:</div>
+          When you're stuck on a bug and need to think through the problem systematically. Also works with cats, plants, or confused coworkers.
+        </div>
+        <div class="related-memes">
+          <strong>Related:</strong>
+          <span class="related-tag">Debugging</span>
+          <span class="related-tag">Problem Solving</span>
+          <span class="related-tag">Talking to Yourself</span>
+        </div>
+        <div class="meme-actions">
+          <a href="/generator?input=Explaining code to rubber duck until solution appears&type=CODE" class="memeify-btn">
+            <i class="fas fa-magic"></i>
+            Memeify This!
+          </a>
+        </div>
+      </div>
+
+      <!-- Stack Overflow Copy Paste -->
+      <div class="meme-entry" data-category="social" data-keywords="stack overflow copy paste programming">
+        <div class="meme-header">
+          <h3 class="meme-title">
+            <span class="meme-emoji">📋</span>
+            Stack Overflow Copy-Paste Programming
+          </h3>
+          <span class="meme-category">Social</span>
+        </div>
+        <div class="meme-origin">Origin: 2008+ • Since Stack Overflow's launch, universally practiced</div>
+        <div class="meme-description">
+          The art of finding solutions on Stack Overflow and adapting them to your code. Not really stealing if you understand what it does... right? RIGHT?! Has become so common that some joke "programming is just knowing what to search for."
+        </div>
+        <div class="meme-example">
+          // TODO: I found this on Stack Overflow<br>
+          // I have no idea how it works but it fixed my problem<br>
+          const result = data.map(x =&gt; x.filter(Boolean)).flat();
+        </div>
+        <div class="usage-context">
+          <div class="usage-title">When to Use:</div>
+          When you need to solve a problem that someone else has definitely encountered before. AKA every day of programming.
+        </div>
+        <div class="related-memes">
+          <strong>Related:</strong>
+          <span class="related-tag">Google-Driven Development</span>
+          <span class="related-tag">Cargo Cult Programming</span>
+          <span class="related-tag">Not Invented Here</span>
+        </div>
+        <div class="meme-actions">
+          <a href="/generator?input=Copying code from Stack Overflow without understanding&type=CODE" class="memeify-btn">
+            <i class="fas fa-magic"></i>
+            Memeify This!
+          </a>
+        </div>
+      </div>
+
+      <!-- It's Not a Bug, It's a Feature -->
+      <div class="meme-entry" data-category="classic" data-keywords="bug feature excuse management">
+        <div class="meme-header">
+          <h3 class="meme-title">
+            <span class="meme-emoji">🐛</span>
+            "It's Not a Bug, It's a Feature"
+          </h3>
+          <span class="meme-category">Classic</span>
+        </div>
+        <div class="meme-origin">Origin: 1980s • Popularized during early software development</div>
+        <div class="meme-description">
+          The classic deflection when software behaves unexpectedly. Sometimes it's a legitimate design choice, other times it's a desperate attempt to avoid fixing something. Has evolved into a legitimate product management strategy.
+        </div>
+        <div class="meme-example">
+          QA: "The login button disappears when you click it."<br>
+          Dev: "That's not a bug, it's a feature! It prevents double-clicking."<br>
+          QA: "But then you can't log in..."<br>
+          Dev: "Enhanced security! 🛡️"
+        </div>
+        <div class="usage-context">
+          <div class="usage-title">When to Use:</div>
+          When you discover unexpected behavior that would be too expensive to fix, or when you want to sound innovative about obvious mistakes.
+        </div>
+        <div class="related-memes">
+          <strong>Related:</strong>
+          <span class="related-tag">Technical Debt</span>
+          <span class="related-tag">Product Management</span>
+          <span class="related-tag">User Experience</span>
+        </div>
+        <div class="meme-actions">
+          <a href="/generator?input=Bug disguised as innovative feature&type=CODE" class="memeify-btn">
+            <i class="fas fa-magic"></i>
+            Memeify This!
+          </a>
+        </div>
+      </div>
+
+      <!-- 99 Little Bugs -->
+      <div class="meme-entry" data-category="classic" data-keywords="99 bugs debugging infinite loop">
+        <div class="meme-header">
+          <h3 class="meme-title">
+            <span class="meme-emoji">🎵</span>
+            99 Little Bugs in the Code
+          </h3>
+          <span class="meme-category">Classic</span>
+        </div>
+        <div class="meme-origin">Origin: Early 2000s • Parody of "99 Bottles of Beer on the Wall"</div>
+        <div class="meme-description">
+          A programming version of the classic counting song that perfectly captures the frustrating reality of debugging: fixing one bug often creates more bugs. The song never ends, just like real debugging sessions.
+        </div>
+        <div class="meme-example">
+          🎵 99 little bugs in the code,<br>
+          99 little bugs,<br>
+          Take one down, patch it around,<br>
+          117 little bugs in the code! 🎵
+        </div>
+        <div class="usage-context">
+          <div class="usage-title">When to Use:</div>
+          When a simple bug fix spirals into a debugging marathon that seems to create more problems than it solves.
+        </div>
+        <div class="related-memes">
+          <strong>Related:</strong>
+          <span class="related-tag">Debugging Hell</span>
+          <span class="related-tag">Regression Bugs</span>
+          <span class="related-tag">Code Quality</span>
+        </div>
+        <div class="meme-actions">
+          <a href="/generator?input=Fixed one bug created three more&type=CODE" class="memeify-btn">
+            <i class="fas fa-magic"></i>
+            Memeify This!
+          </a>
+        </div>
+      </div>
+
+      <!-- There Are Only 10 Types of People -->
+      <div class="meme-entry" data-category="classic" data-keywords="binary joke 10 types people understand">
+        <div class="meme-header">
+          <h3 class="meme-title">
+            <span class="meme-emoji">🔢</span>
+            There Are Only 10 Types of People
+          </h3>
+          <span class="meme-category">Classic</span>
+        </div>
+        <div class="meme-origin">Origin: 1990s • Classic computer science humor</div>
+        <div class="meme-description">
+          "There are only 10 types of people in the world: those who understand binary and those who don't." The joke plays on the fact that "10" in binary equals 2 in decimal. A gateway drug to programmer humor that separates the initiated from the confused.
+        </div>
+        <div class="meme-example">
+          Teacher: "How many types of people are there?"<br>
+          Programmer: "10! Those who understand binary and those who don't."<br>
+          Teacher: "But that's only 2 types..."<br>
+          Programmer: "Exactly! 👨‍💻"
+        </div>
+        <div class="usage-context">
+          <div class="usage-title">When to Use:</div>
+          Perfect icebreaker at tech meetups, or when you want to identify fellow programmers in a crowd. Also works on t-shirts.
+        </div>
+        <div class="related-memes">
+          <strong>Related:</strong>
+          <span class="related-tag">Binary Humor</span>
+          <span class="related-tag">Math Jokes</span>
+          <span class="related-tag">Programmer Identity</span>
+        </div>
+        <div class="meme-actions">
+          <a href="/generator?input=Only 10 types of people understand binary&type=CODE" class="memeify-btn">
+            <i class="fas fa-magic"></i>
+            Memeify This!
+          </a>
+        </div>
+      </div>
+
+      <!-- Hello World -->
+      <div class="meme-entry" data-category="classic" data-keywords="hello world first program tradition">
+        <div class="meme-header">
+          <h3 class="meme-title">
+            <span class="meme-emoji">👋</span>
+            Hello, World!
+          </h3>
+          <span class="meme-category">Classic</span>
+        </div>
+        <div class="meme-origin">Origin: 1972 • "The C Programming Language" by Kernighan and Ritchie</div>
+        <div class="meme-description">
+          The universal first program that every programmer writes when learning a new language. A rite of passage that proves your development environment works and you can make the computer acknowledge your existence. Surprisingly emotional for two words.
+        </div>
+        <div class="meme-example">
+          print("Hello, World!")<br>
+          # The beginning of every programmer's journey<br>
+          # Also the end of many debugging sessions
+        </div>
+        <div class="usage-context">
+          <div class="usage-title">When to Use:</div>
+          First program in any new language, testing new development environments, or when you want to feel nostalgic about simpler times.
+        </div>
+        <div class="related-memes">
+          <strong>Related:</strong>
+          <span class="related-tag">Programming Tradition</span>
+          <span class="related-tag">Learning</span>
+          <span class="related-tag">Nostalgia</span>
+        </div>
+        <div class="meme-actions">
+          <a href="/generator?input=First Hello World program brings back memories&type=CODE" class="memeify-btn">
+            <i class="fas fa-magic"></i>
+            Memeify This!
+          </a>
+        </div>
+      </div>
+
+      <!-- Segmentation Fault -->
+      <div class="meme-entry" data-category="error" data-keywords="segfault segmentation fault core dump memory">
+        <div class="meme-header">
+          <h3 class="meme-title">
+            <span class="meme-emoji">💥</span>
+            Segmentation Fault (Core Dumped)
+          </h3>
+          <span class="meme-category">Error Messages</span>
+        </div>
+        <div class="meme-origin">Origin: 1960s • Unix systems, traumatizing C programmers since forever</div>
+        <div class="meme-description">
+          The most feared error message in C/C++ programming. It means your program tried to access memory it shouldn't have, causing the operating system to terminate it with extreme prejudice. Often accompanied by the sound of a programmer's soul leaving their body.
+        </div>
+        <div class="meme-example">
+          $ ./my_awesome_program<br>
+          Segmentation fault (core dumped)<br>
+          $ gdb ./my_awesome_program core<br>
+          (gdb) bt<br>
+          #0  0x???????? in ??? ()<br>
+          # And thus, the debugging begins...
+        </div>
+        <div class="usage-context">
+          <div class="usage-title">When to Use:</div>
+          When you want to describe something that crashes spectacularly and unexpectedly. Also works as a metaphor for life.
+        </div>
+        <div class="related-memes">
+          <strong>Related:</strong>
+          <span class="related-tag">Memory Management</span>
+          <span class="related-tag">C Programming</span>
+          <span class="related-tag">Core Dumps</span>
+        </div>
+        <div class="meme-actions">
+          <a href="/generator?input=Segmentation fault ruins another debugging session&type=CODE" class="memeify-btn">
+            <i class="fas fa-magic"></i>
+            Memeify This!
+          </a>
+        </div>
+      </div>
+
+      <!-- Premature Optimization -->
+      <div class="meme-entry" data-category="classic" data-keywords="premature optimization evil root knuth">
+        <div class="meme-header">
+          <h3 class="meme-title">
+            <span class="meme-emoji">⚡</span>
+            "Premature Optimization is the Root of All Evil"
+          </h3>
+          <span class="meme-category">Classic</span>
+        </div>
+        <div class="meme-origin">Origin: 1974 • Donald Knuth's famous quote</div>
+        <div class="meme-description">
+          Knuth's warning against optimizing code before it's necessary. Often misquoted and overused to justify writing slow code, but the full quote includes "yet we should not pass up our opportunities in that critical 3%." A philosophical debate disguised as programming advice.
+        </div>
+        <div class="meme-example">
+          Junior Dev: "I spent 3 days optimizing this sorting algorithm!"<br>
+          Senior Dev: "It sorts 10 items... premature optimization is the root of all evil."<br>
+          Junior Dev: "But it's 0.001ms faster!"<br>
+          Senior Dev: "🤦‍♂️"
+        </div>
+        <div class="usage-context">
+          <div class="usage-title">When to Use:</div>
+          When someone is micro-optimizing code that runs once a day, or when you want to sound wise in code reviews.
+        </div>
+        <div class="related-memes">
+          <strong>Related:</strong>
+          <span class="related-tag">Performance</span>
+          <span class="related-tag">Code Reviews</span>
+          <span class="related-tag">Technical Debt</span>
+        </div>
+        <div class="meme-actions">
+          <a href="/generator?input=Spent days optimizing code that runs once&type=CODE" class="memeify-btn">
+            <i class="fas fa-magic"></i>
+            Memeify This!
+          </a>
+        </div>
+      </div>
+
+      <!-- LGTM -->
+      <div class="meme-entry" data-category="modern" data-keywords="lgtm looks good to me code review">
+        <div class="meme-header">
+          <h3 class="meme-title">
+            <span class="meme-emoji">👍</span>
+            LGTM (Looks Good To Me)
+          </h3>
+          <span class="meme-category">Modern</span>
+        </div>
+        <div class="meme-origin">Origin: 2010s • Code review culture and GitHub</div>
+        <div class="meme-description">
+          The universal code review approval that can mean anything from "I thoroughly reviewed every line" to "I trust you know what you're doing" to "I just want to go home." The true meaning is often a mystery that adds excitement to deployments.
+        </div>
+        <div class="meme-example">
+          PR: "Refactored the entire authentication system"<br>
+          Reviewer: *glances at diff for 30 seconds*<br>
+          Reviewer: "LGTM! 🚀"<br>
+          *Production breaks*<br>
+          Reviewer: "How was I supposed to know?"
+        </div>
+        <div class="usage-context">
+          <div class="usage-title">When to Use:</div>
+          Code reviews, when you want to approve something quickly, or when you're confident but haven't read every line.
+        </div>
+        <div class="related-memes">
+          <strong>Related:</strong>
+          <span class="related-tag">Code Review</span>
+          <span class="related-tag">Git</span>
+          <span class="related-tag">Team Dynamics</span>
+        </div>
+        <div class="meme-actions">
+          <a href="/generator?input=LGTM without actually reading the code&type=CODE" class="memeify-btn">
+            <i class="fas fa-magic"></i>
+            Memeify This!
+          </a>
+        </div>
+      </div>
+
+      <!-- Yak Shaving -->
+      <div class="meme-entry" data-category="workflow" data-keywords="yak shaving distraction scope creep">
+        <div class="meme-header">
+          <h3 class="meme-title">
+            <span class="meme-emoji">🦏</span>
+            Yak Shaving
+          </h3>
+          <span class="meme-category">Workflow</span>
+        </div>
+        <div class="meme-origin">Origin: 2000 • MIT AI Lab, popularized by Hal Abelson</div>
+        <div class="meme-description">
+          The seemingly endless chain of tasks that must be completed before you can do the thing you actually want to do. Started as an MIT term, it perfectly describes the rabbit holes that programmers fall into when trying to accomplish simple tasks.
+        </div>
+        <div class="meme-example">
+          Goal: Fix a typo in documentation<br>
+          Reality: Update Node.js → Fix dependencies → Upgrade webpack → Rewrite build system → Learn Docker → Containerize everything → Setup CI/CD → Still haven't fixed the typo
+        </div>
+        <div class="usage-context">
+          <div class="usage-title">When to Use:</div>
+          When a simple task expands into a week-long odyssey through unrelated problems and infrastructure updates.
+        </div>
+        <div class="related-memes">
+          <strong>Related:</strong>
+          <span class="related-tag">Scope Creep</span>
+          <span class="related-tag">Technical Debt</span>
+          <span class="related-tag">Rabbit Holes</span>
+        </div>
+        <div class="meme-actions">
+          <a href="/generator?input=Simple fix becomes week-long yak shaving expedition&type=CODE" class="memeify-btn">
+            <i class="fas fa-magic"></i>
+            Memeify This!
+          </a>
+        </div>
+      </div>
+
+      <!-- Hitting the Ballmer Peak -->
+      <div class="meme-entry" data-category="modern" data-keywords="ballmer peak alcohol programming productivity">
+        <div class="meme-header">
+          <h3 class="meme-title">
+            <span class="meme-emoji">🍺</span>
+            The Ballmer Peak
+          </h3>
+          <span class="meme-category">Modern</span>
+        </div>
+        <div class="meme-origin">Origin: 2007 • XKCD webcomic #323</div>
+        <div class="meme-description">
+          The theoretical blood alcohol level (0.129-0.138%) where programming skills are optimized. Named after Steve Ballmer, this XKCD concept suggests there's a sweet spot where alcohol reduces inhibitions just enough to write brilliant code without being too impaired to type.
+        </div>
+        <div class="meme-example">
+          *After one beer*: "This code is elegant!"<br>
+          *After two beers*: "I'm a programming genius!"<br>
+          *After three beers*: "Why won't this compile?"<br>
+          *Next morning*: "What language is this even in?"
+        </div>
+        <div class="usage-context">
+          <div class="usage-title">When to Use:</div>
+          Joking about late-night coding sessions, explaining unusually creative solutions, or disclaiming code quality at company happy hours.
+        </div>
+        <div class="related-memes">
+          <strong>Related:</strong>
+          <span class="related-tag">Late Night Coding</span>
+          <span class="related-tag">Creative Solutions</span>
+          <span class="related-tag">Code Quality</span>
+        </div>
+        <div class="meme-actions">
+          <a href="/generator?input=Hitting Ballmer Peak for optimal programming&type=CODE" class="memeify-btn">
+            <i class="fas fa-magic"></i>
+            Memeify This!
+          </a>
+        </div>
+      </div>
+
+      <!-- Git Commit Messages -->
+      <div class="meme-entry" data-category="modern" data-keywords="git commit messages wip fix stuff">
+        <div class="meme-header">
+          <h3 class="meme-title">
+            <span class="meme-emoji">📝</span>
+            Terrible Git Commit Messages
+          </h3>
+          <span class="meme-category">Modern</span>
+        </div>
+        <div class="meme-origin">Origin: 2008+ • Since Git became popular</div>
+        <div class="meme-description">
+          The art of writing commit messages that provide absolutely no context about what changed. Future you will thank present you for messages like "fix stuff", "WIP", "ugh", and the classic "THIS SHOULD WORK NOW". Archaeological code analysis at its finest.
+        </div>
+        <div class="meme-example">
+          git log --oneline:<br>
+          a1b2c3d fix stuff<br>
+          e4f5g6h WIP<br>
+          h7i8j9k ugh<br>
+          k0l1m2n THIS SHOULD WORK NOW<br>
+          n3o4p5q probably works<br>
+          q6r7s8t I hate this project
+        </div>
+        <div class="usage-context">
+          <div class="usage-title">When to Use:</div>
+          When you're frustrated, in a hurry, or want to confuse future maintainers (including yourself).
+        </div>
+        <div class="related-memes">
+          <strong>Related:</strong>
+          <span class="related-tag">Git</span>
+          <span class="related-tag">Version Control</span>
+          <span class="related-tag">Documentation</span>
+        </div>
+        <div class="meme-actions">
+          <a href="/generator?input=Git commit message says fix stuff again&type=COMMIT" class="memeify-btn">
+            <i class="fas fa-magic"></i>
+            Memeify This!
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-results hidden" id="noResults">
+      <h3>🔍 No Memes Found</h3>
+      <p>Try searching for something else, or browse by category. Every programming concept has at least one meme!</p>
+    </div>
+
+    <div class="navigation">
+      <a href="/" class="nav-btn">
+        <i class="fas fa-home"></i>
+        🏠 Back to Epic History
+      </a>
+      <a href="/generator" class="nav-btn">
+        <i class="fas fa-magic"></i>
+        🎭 Create Your Own Meme
+      </a>
+      <a href="/horror-stories" class="nav-btn">
+        <i class="fas fa-skull"></i>
+        💀 Horror Stories
+      </a>
+    </div>
+  </div>
+
+  <button class="scroll-top" id="scrollTop">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <script>
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const memeGrid = document.getElementById('memeGrid');
+    const noResults = document.getElementById('noResults');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    
+    let currentFilter = 'all';
+
+    // Search function
+    function filterMemes() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const memes = document.querySelectorAll('.meme-entry');
+      let visibleCount = 0;
+
+      memes.forEach(meme => {
+        const title = meme.querySelector('.meme-title').textContent.toLowerCase();
+        const description = meme.querySelector('.meme-description').textContent.toLowerCase();
+        const keywords = meme.dataset.keywords.toLowerCase();
+        const category = meme.dataset.category;
+        
+        const matchesSearch = title.includes(searchTerm) || 
+                            description.includes(searchTerm) || 
+                            keywords.includes(searchTerm);
+        const matchesFilter = currentFilter === 'all' || category === currentFilter;
+        
+        if (matchesSearch && matchesFilter) {
+          meme.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          meme.classList.add('hidden');
+        }
+      });
+
+      // Show/hide no results message
+      if (visibleCount === 0) {
+        noResults.classList.remove('hidden');
+        memeGrid.style.display = 'none';
+      } else {
+        noResults.classList.add('hidden');
+        memeGrid.style.display = 'grid';
+      }
+    }
+
+    // Event listeners
+    searchInput.addEventListener('input', filterMemes);
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Update active filter
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.category;
+        
+        // Filter memes
+        filterMemes();
+      });
+    });
+
+    // Scroll to top functionality
+    const scrollTopBtn = document.getElementById('scrollTop');
+    
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) {
+        scrollTopBtn.classList.add('visible');
+      } else {
+        scrollTopBtn.classList.remove('visible');
+      }
+    });
+
+    scrollTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+
+    // Related tag click functionality
+    document.querySelectorAll('.related-tag').forEach(tag => {
+      tag.addEventListener('click', () => {
+        searchInput.value = tag.textContent.toLowerCase();
+        filterMemes();
+        searchInput.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Focus search on '/' key
+      if (e.key === '/' && e.target !== searchInput) {
+        e.preventDefault();
+        searchInput.focus();
+      }
+      
+      // Clear search on Escape
+      if (e.key === 'Escape' && e.target === searchInput) {
+        searchInput.value = '';
+        filterMemes();
+      }
+    });
+
+    // Fun interaction: Konami code for secret meme
+    let konamiCode = [];
+    const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+    
+    document.addEventListener('keydown', (e) => {
+      konamiCode.push(e.code);
+      if (konamiCode.length > konamiSequence.length) {
+        konamiCode.shift();
+      }
+      
+      if (konamiCode.join('') === konamiSequence.join('')) {
+        alert('🎮 Secret Meme Unlocked: "Up Up Down Down Left Right Left Right B A" - The Konami Code! Now you have 30 extra lives in your debugging sessions!');
+        konamiCode = [];
+      }
+    });
+
+    // Random meme button (hidden feature)
+    document.addEventListener('dblclick', (e) => {
+      if (e.target === document.body || e.target.classList.contains('container')) {
+        const memes = document.querySelectorAll('.meme-entry:not(.hidden)');
+        if (memes.length > 0) {
+          const randomMeme = memes[Math.floor(Math.random() * memes.length)];
+          randomMeme.scrollIntoView({ behavior: 'smooth' });
+          randomMeme.style.animation = 'none';
+          setTimeout(() => {
+            randomMeme.style.animation = 'pulse 1s ease-in-out';
+          }, 10);
+        }
+      }
+    });
+  </script>
+
+  <style>
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+</body>
+</html> 

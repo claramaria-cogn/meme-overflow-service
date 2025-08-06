@@ -40,6 +40,11 @@ public class MemeController {
     return "horror-stories";
   }
 
+  @GetMapping("/dictionary")
+  public String dictionary() {
+    return "dictionary";
+  }
+
   @GetMapping("/generate")
   public String generate(@RequestParam(required = false) String input,
       @RequestParam(defaultValue = "commit") String type,
