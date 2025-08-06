@@ -22,17 +22,17 @@ public class MemeController {
 
   @GetMapping("/")
   public String home() {
+    return "history";
+  }
+
+  @GetMapping("/generator")
+  public String generator() {
     return "meme-generator";
   }
 
   @GetMapping("/gallery")
   public String gallery() {
     return "gallery";
-  }
-
-  @GetMapping("/history")
-  public String history() {
-    return "history";
   }
 
   @GetMapping("/generate")
