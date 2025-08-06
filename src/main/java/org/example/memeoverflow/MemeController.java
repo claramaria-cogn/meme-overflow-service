@@ -30,6 +30,11 @@ public class MemeController {
     return "gallery";
   }
 
+  @GetMapping("/history")
+  public String history() {
+    return "history";
+  }
+
   @GetMapping("/generate")
   public String generate(@RequestParam(required = false) String input,
       @RequestParam(defaultValue = "commit") String type,
